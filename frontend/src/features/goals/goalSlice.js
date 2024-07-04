@@ -46,6 +46,25 @@ export const getGoals = createAsyncThunk(
     }
   }
 )
+//uodate user goal
+export const updateGoal = createAsyncThunk(
+  'goals/update',
+  async ({ id, updatedGoalData }, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await goalService.updateGoal(id,updatedGoalData, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
 
 // Delete user goal
 export const deleteGoal = createAsyncThunk(
@@ -111,6 +130,25 @@ export const goalSlice = createSlice({
         )
       })
       .addCase(deleteGoal.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(updateGoal.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(updateGoal.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // Assuming action.payload contains the updated goal
+        const updatedGoal = action.payload;
+        //If the IDs match (goal._id === updatedGoal._id), it means this is the goal that has been updated. So, it includes the updatedGoal in the new array.
+        //If the IDs do not match, it means this goal has not changed. So, it includes the original goal in the new array.
+        state.goals = state.goals.map((goal) =>
+          goal._id === updatedGoal._id ? updatedGoal : goal
+        );
+      })
+      .addCase(updateGoal.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
