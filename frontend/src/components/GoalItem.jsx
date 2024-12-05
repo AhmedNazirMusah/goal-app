@@ -1,9 +1,14 @@
 import { useDispatch } from 'react-redux'
 import { deleteGoal } from '../features/goals/goalSlice'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 function GoalItem({ goal }) {
   const dispatch = useDispatch()
+  const handlleDeletegoal = () => {
+    dispatch(deleteGoal(goal._id));
+    toast.success("Goal deleted succesfully")
+  }
 
   return (
     <div className='goal'>
@@ -13,7 +18,7 @@ function GoalItem({ goal }) {
         <button className='btn btn-block'>Update</button>
       </Link>
       
-      <button onClick={() => dispatch(deleteGoal(goal._id))} className='close'>
+      <button onClick={handlleDeletegoal} className='close'>
         X
       </button>
     </div>
