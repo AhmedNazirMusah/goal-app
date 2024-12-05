@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateGoal } from "../features/goals/goalSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function UpdatePage() {
   const navigate = useNavigate();
@@ -11,8 +12,14 @@ function UpdatePage() {
   const { id } = useParams();
 
   const handleUpdate = async () => {
+    if (!newText) {
+      toast.error("Please update the goal");
+      return;
+    }
+  
     const updatedGoalData = { text: newText };
     dispatch(updateGoal({ id, updatedGoalData }));
+    toast.success("Goal updated successfully!"); 
     navigate("/");
   };
 
